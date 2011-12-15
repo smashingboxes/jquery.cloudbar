@@ -10,18 +10,18 @@
 ;(function ( $, window, document, undefined ) {
     
     var pluginName = 'cloudbar',
-    defaults = {
-        taxonomy            : "h2",
+        defaults = {
+            taxonomy            : "h2",
 
-        css                 : "",
+            css                 : "",
 
-        custom_labels       : [],
-        custom_list_items   : "",
-        
-        padding             : 25,
-        padding_initial     : 0,
-        padding_forgiveness : 0.2
-    };
+            custom_labels       : [],
+            custom_list_items   : "",
+            
+            padding             : 25,
+            padding_initial     : 0,
+            padding_forgiveness : 0.2
+        };
 
 
     function Plugin( element, options ) {
