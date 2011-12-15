@@ -15,7 +15,8 @@
         padding           : 25,
         css               : "",
         custom_labels     : [],
-        custom_list_items : ""
+        custom_list_items : "",
+        initial_top       : 0
     };
 
 
@@ -80,8 +81,8 @@
         // Select the first list item
         $list.children("li").first().addClass("selected");
         
-        // Add list items to sidebar
-        $sidebar.append($list);
+        // Add list items to sidebar and set minimum top value
+        $sidebar.append($list).css("top", this.options.initial_top);
         
         // Add sidebar to container
         this.$element.append($sidebar);
@@ -95,11 +96,11 @@
 
         // Add the sidebar
         this.generateSidebar();
-        
+
         // Autoselects sidebar items upon certain scroll levels
         $(window).scroll(function(e) {
             
-            // Only this function on every 10 pixels of scroll to
+            // Only this function on every 5 pixels of scroll to
             // improve performance
             if ($(this).scrollTop() % 10 !== 0) { return false; }
             
@@ -111,7 +112,10 @@
             });
 
             $("#cloudbar ul li").removeClass("selected").eq(target).addClass("selected");
+            
+            var sidebarTop = ( $(window).scrollTop() > fn.options.initial_top ) ? fn.options.padding : fn.options.initial_top;
 
+            $("#cloudbar").animate({ top: sidebarTop }, 250);
         });
     };
 
