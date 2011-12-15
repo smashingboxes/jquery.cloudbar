@@ -1,104 +1,89 @@
-// jQuery Plugin Boilerplate
-// A boilerplate for jumpstarting jQuery plugins development
-// version 1.1, May 14th, 2011
-// by Stefan Gabos
+// ------------------------------------- //
+// jQuery Cloudbar
+// ------------------------------------- //
+// Description: A simple sidebar and 
+//              scroller plugin
+// Version: 0.0.1
+// Author: Nate Hunzaker
+// ------------------------------------- //
 
-// remember to change every instance of "pluginName" to the name of your plugin!
-(function($) {
+;(function ( $, window, document, undefined ) {
+    
+    var pluginName = 'cloudbar',
+    defaults = {
+        taxonomy     : "h1",
+        padding      : 25,
+        stretch      : true
+    };
 
-    // here we go!
-    $.pluginName = function(element, options) {
 
-        // plugin's default options
-        // this is private property and is  accessible only from inside the plugin
-        var defaults = {
-
-            foo: 'bar',
-
-            // if your plugin is event-driven, you may provide callback capabilities for its events.
-            // execute these functions before or after events of your plugin, so that users may customize
-            // those particular events without changing the plugin's code
-            onFoo: function() {}
-
-        }
-
-        // to avoid confusions, use "plugin" to reference the current instance of the object
-        var plugin = this;
-
-        // this will hold the merged default, and user-provided options
-        // plugin's properties will be available through this object like:
-        // plugin.settings.propertyName from inside the plugin or
-        // element.data('pluginName').settings.propertyName from outside the plugin, where "element" is the
-        // element the plugin is attached to;
-        plugin.settings = {}
-
-        var $element = $(element),  // reference to the jQuery version of DOM element the plugin is attached to
-             element = element;        // reference to the actual DOM element
-
-        // the "constructor" method that gets called when the object is created
-        plugin.init = function() {
-
-            // the plugin's final properties are the merged default and user-provided options (if any)
-            plugin.settings = $.extend({}, defaults, options);
-
-            // code goes here
-
-        }
-
-        // public methods
-        // these methods can be called like:
-        // plugin.methodName(arg1, arg2, ... argn) from inside the plugin or
-        // element.data('pluginName').publicMethod(arg1, arg2, ... argn) from outside the plugin, where "element"
-        // is the element the plugin is attached to;
-
-        // a public method. for demonstration purposes only - remove it!
-        plugin.foo_public_method = function() {
-
-            // code goes here
-
-        }
-
-        // private methods
-        // these methods can be called only from inside the plugin like:
-        // methodName(arg1, arg2, ... argn)
-
-        // a private method. for demonstration purposes only - remove it!
-        var foo_private_method = function() {
-
-            // code goes here
-
-        }
-
-        // fire up the plugin!
-        // call the "constructor" method
-        plugin.init();
-
+    function Plugin( element, options ) {
+        this.element   = element;
+        this.$element  = $(element);
+        this.options   = $.extend( {}, defaults, options) ;
+        
+        this._defaults = defaults;
+        this._name     = pluginName;
+        
+        this.init();
     }
 
-    // add the plugin to the jQuery.fn object
-    $.fn.pluginName = function(options) {
 
-        // iterate through the DOM elements we are attaching the plugin to
-        return this.each(function() {
+    Plugin.prototype.scroll = function(e) {
+        
+        var slot = $(e.target).attr("data-slot");
+        
+        var anim = {
+            // The offset of the element - the desired padding from the top
+            scrollTop: $(this.options.taxonomy).eq(slot).offset().top - this.options.padding
+        };
 
-            // if plugin has not already been attached to the element
-            if (undefined == $(this).data('pluginName')) {
+		    $('html, body').stop().animate(anim, this.options.speed);
+    };
 
-                // create a new instance of the plugin
-                // pass the DOM element and the user-provided options as arguments
-                var plugin = new $.pluginName(this, options);
 
-                // in the jQuery version of the element
-                // store a reference to the plugin object
-                // you can later access the plugin and its methods and properties like
-                // element.data('pluginName').publicMethod(arg1, arg2, ... argn) or
-                // element.data('pluginName').settings.propertyName
-                $(this).data('pluginName', plugin);
+    Plugin.prototype.generateSidebar = function() {
 
-            }
+        var $sidebar = $("<ul id='cloudbar'></ul>");
 
+        var template = function(props){
+             return $("<li data-slot='" + props.num + "'>" + props.text + "</li>");
+        };
+        
+        $(this.options.taxonomy).each(function(i) {
+
+            var item = template({
+                num  : i,
+                text : $(this).text()
+            })
+            
+            
+            
+            $sidebar.append(item );
         });
 
-    }
+        var fn = this;
 
-})(jQuery);
+        $sidebar.children("li").click(function(e) {
+            fn.scroll(e);
+        });
+
+        $("body").append($sidebar);
+
+    };
+
+
+    Plugin.prototype.init = function () {
+        this.generateSidebar(); 
+    };
+
+
+    $.fn[pluginName] = function ( options ) {
+        return this.each(function () {
+            if (!$.data(this, 'plugin_' + pluginName)) {
+                $.data(this, 'plugin_' + pluginName, new Plugin( this, options ));
+            }
+        });
+    };
+
+})(jQuery, window, document);
