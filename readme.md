@@ -1,6 +1,6 @@
 #jQuery.Cloudbar
 
-For sidebars when you don't always know the content
+For sidebars when you don't always know the content (rain or shine, har har...)
 
 **Options**
 
