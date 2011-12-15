@@ -43,26 +43,26 @@
 
 
     Plugin.prototype.generateSidebar = function() {
+        
+        var fn       = this,
+            $sidebar = $("<ul id='cloudbar'></ul>");
+            
+            template = function(props){
+                return $("<li data-slot='" + props.num + "'>" + props.text + "</li>");
+            },
 
-        var $sidebar = $("<ul id='cloudbar'></ul>");
-
-        var template = function(props){
-             return $("<li data-slot='" + props.num + "'>" + props.text + "</li>");
-        };
+            hierarchy = this.options.taxonomy.split(" ");
         
         $(this.options.taxonomy).each(function(i) {
 
             var item = template({
                 num  : i,
                 text : $(this).text()
-            })
-            
-            
-            
-            $sidebar.append(item );
+            });
+
+            $sidebar.append(item);
         });
 
-        var fn = this;
 
         $sidebar.children("li").click(function(e) {
             fn.scroll(e);
