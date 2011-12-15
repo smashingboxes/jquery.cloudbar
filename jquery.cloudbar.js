@@ -11,12 +11,16 @@
     
     var pluginName = 'cloudbar',
     defaults = {
-        taxonomy          : "h2",
-        padding           : 25,
-        css               : "",
-        custom_labels     : [],
-        custom_list_items : "",
-        initial_top       : 0
+        taxonomy            : "h2",
+
+        css                 : "",
+
+        custom_labels       : [],
+        custom_list_items   : "",
+        
+        padding             : 25,
+        padding_initial     : 0,
+        padding_forgiveness : 0.2
     };
 
 
@@ -113,7 +117,7 @@
 
             $("#cloudbar ul li").removeClass("selected").eq(target).addClass("selected");
             
-            var sidebarTop = ( $(window).scrollTop() > fn.options.initial_top ) ? fn.options.padding : fn.options.initial_top;
+            var sidebarTop = ( $(window).scrollTop() > (fn.options.padding_initial * (1 - fn.options.padding_forgiveness))) ? fn.options.padding : fn.options.padding_initial;
 
             $("#cloudbar").animate({ top: sidebarTop }, 250);
         });
