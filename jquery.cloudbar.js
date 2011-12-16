@@ -3,26 +3,29 @@
 // ------------------------------------- //
 // Description: A simple sidebar generator and 
 //              scroller plugin
-// Version: 0.0.1
+// Version: 0.8.0
 // Author: Nate Hunzaker
 // ------------------------------------- //
 
-;(function ( $, window, document, undefined ) {
+;
+
+!function ( $, window, document, undefined ) {
     
     var pluginName = 'cloudbar',
-        defaults = {
-            taxonomy            : "h2",
+    defaults = {
+        taxonomy            : "h2",
 
-            css                 : "",
+        css                 : "",
 
-            custom_labels       : [],
-            custom_list_items   : "",
-            
-            padding             : 25,
-            padding_initial     : 0,
-            padding_forgiveness : 0.2
-        };
+        custom_labels       : [],
+        custom_list_items   : "",
+        
+        padding             : 25,
+        padding_initial     : 0,
+        padding_forgiveness : 0.2,
 
+        navigation_arrows   : true        
+    };
 
     function Plugin( element, options ) {
         this.element   = element;
@@ -33,9 +36,15 @@
         this._name     = pluginName;
         
         this.init();
-    }
+    };
+
+    // Selects specific menu items
+    Plugin.prototype.handleSelection = function(slot) {
+        $("#cloudbar ul li").removeClass("selected").eq(slot).addClass("selected");
+    };    
 
 
+    // Manually scrolls the page
     Plugin.prototype.scroll = function(e) {
         
         $("#cloudbar li").removeClass("selected");
@@ -47,6 +56,8 @@
             };
 
 		    $('html, body').stop().animate(anim, this.options.speed);
+
+        this.handleSelection(slot);
     };
 
 
@@ -61,7 +72,6 @@
             },
 
             hierarchy = this.options.taxonomy.split(" ");
-        
 
         $(this.options.taxonomy).each(function(i) {
 
@@ -92,14 +102,11 @@
         this.$element.append($sidebar);
 
     };
+    
 
-
-    Plugin.prototype.init = function () {
+    Plugin.prototype.watchScroll = function() {
 
         var fn = this;
-
-        // Add the sidebar
-        this.generateSidebar();
 
         // Autoselects sidebar items upon certain scroll levels
         $(window).scroll(function(e) {
@@ -115,12 +122,45 @@
                 target = ( $(this).offset().top < ( $sidebar.offset().top + $sidebar.height())) ? i : target;
             });
 
-            $("#cloudbar ul li").removeClass("selected").eq(target).addClass("selected");
+            fn.handleSelection(target);
             
             var sidebarTop = ( $(window).scrollTop() > (fn.options.padding_initial * (1 - fn.options.padding_forgiveness))) ? fn.options.padding : fn.options.padding_initial;
 
             $("#cloudbar").animate({ top: sidebarTop }, 250);
         });
+
+    };
+    
+
+    Plugin.prototype.generateArrows = function() {
+
+        var fn = this,
+            $arrow = $("<div class='cloudbar-arrow'></div>");
+     
+        // Unfortunately, we need to get around JS's method of
+        // scoping events
+        function scopedScroll(e) {
+            fn.scroll.apply(fn, [e]);
+        }                                          
+
+        $(this.options.taxonomy).each(function(i) {
+            $(this).before($arrow).prev(".cloudbar-arrow").attr("data-slot", i).click(scopedScroll);
+        });
+        
+    };
+
+
+    Plugin.prototype.init = function () {
+
+        // Add the sidebar
+        this.generateSidebar();
+
+        // Watch the scroll of the page
+        this.watchScroll();
+
+        // Generate arrow navigation if specified        
+        this.options.navigation_arrows && this.generateArrows();
+       
     };
 
 
@@ -132,4 +172,4 @@
         });
     };
 
-})(jQuery, window, document);
+}(jQuery, window, document);
