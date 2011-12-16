@@ -17,8 +17,9 @@ $("sidebar-container").cloudbar({
    
 
     padding             : 25,                 // How much room from the top of the page should be spared when scrolling?
-    padding_initial     : 0                   // Some times you need the sidebar to start a a specific padding level   
-    padding_forgiveness : 0.2                 // Forgiveness with switching between initial padding and regular padding
+    padding_initial     : 0,                  // Some times you need the sidebar to start a a specific padding level   
+    padding_forgiveness : 0.2,                // Forgiveness with switching between initial padding and regular padding
+    navigation_arrows   : false,              // If set to true, cloudbar will add navigation arrows throughout the taxonomy
 });
 
 ```
